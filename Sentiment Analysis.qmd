@@ -1,0 +1,24 @@
+---
+title: "Assignment 10A: Sentiment Analysis"
+author: "Muhammad Ahmad"
+format: html
+editor: visual
+---
+
+## Approach
+
+  After reading chapter 2 of *Text Mining with R* and understanding the code used for sentiment analysis written by Julia Silge and David Robinson, I believe I can adapt their example code to make estimation on sentiment for book reviews of the Brandon Sanderson series known as *Mistborn*. I am not certain on whether I want to use the lexicons in a package like tidy text or find one through my own research. I will deiced what my plan will be by the end of Friday but I may also experiment with different packages to see which lexicons will work with my text corpus.
+
+
+## Challenges 
+
+  Some challenges involved with this include fine tuning the sentiment analyse to my own goals, finding the appropriate lexicon, and being able to properly web scrape the reviews from a website. Spending extra time to experiment with the adapted code from the source to try and get a close expected outcome from the code. I assume that a lexicon with academic or review style language is best suited for this type of sentiment analyze and will look for that. I would like to web scrape a website for the reviews and put it in a data frame but if that takes more effort than I have time for then I will manually make a data frame. 
+
+## Sources 
+
+Silge, Julia, and David Robinson. Text Mining with R: A Tidy Approach. O'Reilly Media, 2017.
+
+
+Code adapted from [Text Mining with R](https://www.tidytextmining.com)
+by Julia Silge and David Robinson (O'Reilly, 2017),
+licensed under CC BY-NC-SA 3.0.
