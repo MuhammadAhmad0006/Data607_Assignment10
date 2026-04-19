@@ -1,0 +1,153 @@
+---
+title: "Assignment 10B NobelPrize"
+author: "Muhammad Ahmad"
+format: html
+editor: visual
+---
+
+### Approach 
+
+
+
+### Challenges
+
+
+## Retriving data from Nobel Prize API
+
+The Nobel Prize offers two API endpoints. The laureates endpoint for information
+about nobel prize winners and their personal information, and the prizes end 
+point which returns general information about the prize category and who won it
+during which year
+
+```{r}
+library(jsonlite)
+library(tibble)
+library(dplyr)
+
+```
+
+```{r}
+
+laureates <- fromJSON(
+  "https://api.nobelprize.org/2.1/laureates",
+  flatten = TRUE
+)$laureates
+
+
+prizes_df <- fromJSON(
+  "https://api.nobelprize.org/2.1/nobelPrizes",
+  flatten = TRUE
+)$nobelPrizes
+
+ laureates <- as_tibble(laureates_df)
+ prizes_df <- as_tibble(prizes_df)
+
+ laureates_df_clean <- laureates_df %>%
+   mutate(
+     nobelPrizes = sapply(nobelPrizes, function(c){
+       if(is.data.frame(c) ){
+         paste(c,collapse = ",")
+       } else {
+         NA_character_
+       }
+       }))
+     
+ prizes_df_clean <- prizes_df %>%
+   mutate(
+     laureates = sapply(laureates, function(x) {
+      if (is.null(x) || length(x) == 0) {
+        NA_character_
+      } else if (is.data.frame(x) && "knownName.en" %in% names(x)) {
+        paste(x$knownName.en, collapse = ", ")       # use known name if available
+      } else if (is.data.frame(x) && "fullName.en" %in% names(x)) {
+        paste(x$fullName.en, collapse = ", ")         # fallback to full name
+      } else {
+        NA_character_
+      }
+    })
+  )
+
+ 
+laureates_df_clean %>%
+  mutate(
+    if (laureates_df_clean$knownName.en == prizes_df_clean$laureates){
+        amountawarded = prizes_df_clean$prizeAmountAdjusted
+        }else{
+        NA_character_
+        }
+  )
+```
+
+```{r}
+head(laureates_df_clean)
+```
+
+```{r}
+prizes_df_clean
+```
+
+### Questions 
+
+## Question# 1 
+
+What country has the most nobel prize winners that stay in their birth country?
+
+```{r}
+laureates_df_clean %>%
+  group_by(birth.place.country.en) %>%
+  summarise(
+    laureates.born = n(),
+    retained = sum(birth.place.countryNow.en == birth.place.country.en, na.rm = TRUE),
+    ratio = retained / laureates.born
+  )
+```
+
+This shows that the USA has the highest amount of nobel prize winners that stay
+in their birth place.
+
+## Question# 2
+
+What age recived the most awards?
+
+
+```{r}
+laureates_df_clean$year.awarded <- substr(laureates_df_clean$nobelPrizes, 1, 4)
+
+laureates_df_clean$age.awarded <- as.numeric(laureates_df_clean$year.awarded) -
+  as.numeric(substr(laureates_df_clean$birth.date, 1, 4))
+
+```
+
+```{r}
+laureates_df_clean %>%
+  group_by(age.awarded) %>%
+  summarise(
+    total = n()
+  )
+
+
+```
+Base off of this the age with the most awards is 53.
+## Question# 3
+
+On average which gender recives the most awards?
+
+```{r}
+
+
+laureates_df_clean %>%
+  filter(!is.na(gender)) %>%
+  group_by(gender) %>%
+  summarise(
+    average.amount = mean(laureates_df_clean$prizeAmountAdjusted, na.rm = ),
+    smallest = min(laureates_df_clean$prizeAmountAdjusted, na.rm = TRUE),
+    largest = max(laureates_df_clean$prizeAmountAdjusted, na.rm = TRUE),
+    total = n()
+)
+```
+
+## Question# 4
+
+
+### Conclusions 
+

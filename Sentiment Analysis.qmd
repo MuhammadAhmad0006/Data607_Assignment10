@@ -23,6 +23,7 @@ library(dplyr)
 library(stringr)
 library(tidyr)
 library(ggplot2)
+library(tidytext)
 ```
 
 
@@ -103,7 +104,52 @@ bing_and_nrc <- bind_rows(
   mutate(sentiment = positive - negative)
 ```
 
-## Webscraping the reviews
+## Analysing Alice in Wonderland 
+
+```{r}
+library(syuzhet)
+library(gutenbergr)
+```
+Shows that the id of Alice is 11
+```{r}
+gutenberg_works(title == "Alice's Adventures in Wonderland")
+```
+
+```{r}
+Alice_raw <- gutenberg_download(11)
+```
+```{r}
+Alice_clean <- Alice_raw %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words)
+```
+
+```{r}
+Alice_sentiment <- get_sentiment(Alice_clean$word, method = "syuzhet")
+
+Alice_clean$sentiment_score <- Alice_sentiment
+```
+
+```{r}
+Alice_plot <- Alice_clean %>%
+  mutate(index = row_number() %/% 100) %>%
+  group_by(index) %>%
+  summarise(sentiment = sum(sentiment_score))
+```
+
+```{r}
+ggplot(Alice_plot, aes(index, sentiment)) +
+  geom_col(fill = "yellowgreen") +
+  theme_minimal() +
+  labs(title = "Sentiment trajectory of Alice in Wonderland",
+       subtitle = "Syuzhet Lexicon",
+       x = "Narrative Progress (100-word chunks)",
+       y = "Total Sentiment Score")
+```
+
+
+## Conclusions 
+
 
 ## Sources 
 
