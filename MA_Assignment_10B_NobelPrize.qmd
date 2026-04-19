@@ -7,10 +7,11 @@ editor: visual
 
 ### Approach 
 
-
-
-### Challenges
-
+My planned approach is to download the data from the API as a JSON file then 
+covert into a tibble style data frame. Once I have the data frames I will answer
+questions by cross referencing the two different data frames. The two data frames
+are a Laurent data frame for information about the winners and a more simple df
+about the awards.
 
 ## Retriving data from Nobel Prize API
 
@@ -68,14 +69,7 @@ prizes_df <- fromJSON(
   )
 
  
-laureates_df_clean %>%
-  mutate(
-    if (laureates_df_clean$knownName.en == prizes_df_clean$laureates){
-        amountawarded = prizes_df_clean$prizeAmountAdjusted
-        }else{
-        NA_character_
-        }
-  )
+
 ```
 
 ```{r}
@@ -130,24 +124,25 @@ laureates_df_clean %>%
 Base off of this the age with the most awards is 53.
 ## Question# 3
 
-On average which gender recives the most awards?
+On average which gender recieves the most awards?
 
 ```{r}
-
-
 laureates_df_clean %>%
   filter(!is.na(gender)) %>%
   group_by(gender) %>%
-  summarise(
-    average.amount = mean(laureates_df_clean$prizeAmountAdjusted, na.rm = ),
-    smallest = min(laureates_df_clean$prizeAmountAdjusted, na.rm = TRUE),
-    largest = max(laureates_df_clean$prizeAmountAdjusted, na.rm = TRUE),
-    total = n()
-)
+  summarise(count = n())
 ```
 
+here we can see our output shows us that according to the data frame more males 
+Nobel prizes than women. 
+
 ## Question# 4
-
-
-### Conclusions 
-
+Which continent receives the most Nobel prizes? 
+```{r}
+laureates_df_clean %>%
+  filter(!is.na(birth.place.continent.en)) %>% 
+  group_by(birth.place.continent.en) %>%
+  summarise(total_prizes = n()) %>%
+  arrange(desc(total_prizes))   
+```
+Europe receives the most Nobel prizes according to the data.
