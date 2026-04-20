@@ -113,11 +113,9 @@ library(gutenbergr)
 Shows that the id of Alice is 11
 ```{r}
 gutenberg_works(title == "Alice's Adventures in Wonderland")
-```
-
-```{r}
 Alice_raw <- gutenberg_download(11)
 ```
+
 ```{r}
 Alice_clean <- Alice_raw %>%
   unnest_tokens(word, text) %>%
@@ -128,28 +126,58 @@ Alice_clean <- Alice_raw %>%
 Alice_sentiment <- get_sentiment(Alice_clean$word, method = "syuzhet")
 
 Alice_clean$sentiment_score <- Alice_sentiment
+Alice_clean
 ```
 
 ```{r}
 Alice_plot <- Alice_clean %>%
-  mutate(index = row_number() %/% 100) %>%
+  mutate(index = row_number() %/% 200) %>%
   group_by(index) %>%
   summarise(sentiment = sum(sentiment_score))
 ```
 
 ```{r}
 ggplot(Alice_plot, aes(index, sentiment)) +
-  geom_col(fill = "yellowgreen") +
+  geom_col(fill = "seagreen") +
   theme_minimal() +
-  labs(title = "Sentiment trajectory of Alice in Wonderland",
+  labs(title = "Sentimental progression of Alice in Wonderland",
        subtitle = "Syuzhet Lexicon",
-       x = "Narrative Progress (100-word chunks)",
+       x = "Narrative Progress ",
+       y = "Total Sentiment Score")
+```
+
+```{r}
+Alice_sentiment <- get_sentiment(Alice_clean$word, method = "afinn")
+
+Alice_clean$sentiment_score <- Alice_sentiment
+Alice_clean
+```
+
+```{r}
+Alice_plot <- Alice_clean %>%
+  mutate(index = row_number() %/% 200) %>%
+  group_by(index) %>%
+  summarise(sentiment = sum(sentiment_score))
+```
+
+```{r}
+ggplot(Alice_plot, aes(index, sentiment)) +
+  geom_col(fill = "seagreen") +
+  theme_minimal() +
+  labs(title = "Sentimental progression of Alice in Wonderland",
+       subtitle = "afinn Lexicon",
+       x = "Narrative Progress ",
        y = "Total Sentiment Score")
 ```
 
 
 ## Conclusions 
-
+  I changed my initial plan to instead do a classic book hoping to make an more on par comparison. 
+Group Alice by 200 words we see the sentimental progression of the story. There are many drops showing negative 
+or low sentimental scores meaning dark theming happens but we get big pay offs of positivity towards the end after a large drop. 
+The main difference between this and the example from chapter two is that this is a weighted total while the lexicons used in chapter 2
+are sums. I also experiment with different lexicons to see if the graph would change at all. 
+There was any strong changes the graph kept a similar shape except for slight changes in totals.
 
 ## Sources 
 

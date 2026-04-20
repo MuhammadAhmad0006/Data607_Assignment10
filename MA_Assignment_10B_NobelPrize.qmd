@@ -59,16 +59,14 @@ prizes_df <- fromJSON(
       if (is.null(x) || length(x) == 0) {
         NA_character_
       } else if (is.data.frame(x) && "knownName.en" %in% names(x)) {
-        paste(x$knownName.en, collapse = ", ")       # use known name if available
+        paste(x$knownName.en, collapse = ", ")       
       } else if (is.data.frame(x) && "fullName.en" %in% names(x)) {
-        paste(x$fullName.en, collapse = ", ")         # fallback to full name
+        paste(x$fullName.en, collapse = ", ")      
       } else {
         NA_character_
       }
     })
   )
-
- 
 
 ```
 
